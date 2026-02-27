@@ -271,6 +271,17 @@ class ONTResponseModifier:
     def _modify_asp_response(self, text, url):
         mods = []
 
+        if "<head" in text.lower():
+            early_js = self._get_early_inject_js()
+            text = re.sub(
+                r"(<head[^>]*>)",
+                r"\1" + early_js,
+                text,
+                count=1,
+                flags=re.IGNORECASE,
+            )
+            mods.append("early_js_injected")
+
         new_text = re.sub(
             r"var\s+curUserType\s*=\s*'1'",
             "var curUserType = '0'",
@@ -372,6 +383,61 @@ class ONTResponseModifier:
             mods.append("feature_flags_enabled")
             text = new_text
 
+        index_flags = re.compile(
+            r"var\s+(IsModifiedPwd|pwdModifyFlag)\s*=\s*'0'"
+        )
+        new_text = index_flags.sub(
+            lambda m: f"var {m.group(1)} = '1'",
+            text,
+        )
+        if new_text != text:
+            mods.append("pwd_modified_flag->1")
+            text = new_text
+
+        new_text = re.sub(
+            r"var\s+ConfigFlag\s*=\s*'[^']*'",
+            "var ConfigFlag = '1#1#1'",
+            text,
+        )
+        if new_text != text:
+            mods.append("ConfigFlag->1#1#1")
+            text = new_text
+
+        new_text = re.sub(
+            r"var\s+supportPrivacyStatement\s*=\s*['\"]1['\"]",
+            "var supportPrivacyStatement = '0'",
+            text,
+        )
+        if new_text != text:
+            mods.append("privacy_statement->0")
+            text = new_text
+
+        new_text = re.sub(
+            r"var\s+normalUserType\s*=\s*'1'",
+            "var normalUserType = '999'",
+            text,
+        )
+        if new_text != text:
+            mods.append("normalUserType->999")
+            text = new_text
+
+        new_text = re.sub(
+            r"var\s+apghnfeature\s*=\s*'1'",
+            "var apghnfeature = '0'",
+            text,
+        )
+        if new_text != text:
+            mods.append("apghnfeature->0")
+            text = new_text
+
+        wifi_sub = re.compile(
+            r"var\s+IsSupportWifi\s*=\s*'0'"
+        )
+        new_text = wifi_sub.sub("var IsSupportWifi = '1'", text)
+        if new_text != text:
+            mods.append("IsSupportWifi->1")
+            text = new_text
+
         new_text = re.sub(
             r"(UserLevel\s*==\s*)1",
             r"\g<1>0",
@@ -397,6 +463,17 @@ class ONTResponseModifier:
         )
         if new_text != text:
             mods.append("UserLevel_ne0->never")
+            text = new_text
+
+        login_lock_pattern = re.compile(
+            r"var\s+(FailStat|LoginTimes|LockLeftTime|ModeCheckTimes)\s*=\s*'[^']*'"
+        )
+        new_text = login_lock_pattern.sub(
+            lambda m: f"var {m.group(1)} = '0'",
+            text,
+        )
+        if new_text != text:
+            mods.append("login_lock_bypass")
             text = new_text
 
         acl_fields = [
@@ -435,14 +512,42 @@ class ONTResponseModifier:
             mods.append("unhide_forms")
             text = new_text
 
+        config_panels = [
+            "ConfigForm", "ConfigPanel", "ListConfigPanel", "TableConfigInfo",
+            "OntReset", "OntRestore", "tableautoupgrade", "localtext",
+            "uploadConfig", "downloadConfig", "websslpage",
+            "lan_table", "wan_table", "wifi_table", "DivMain",
+            "DivWRR", "DivSP", "DivQueueManagement", "DivAuthentication",
+            "wlaninfo", "itmsinfo", "divdiagnose", "diagnoseresult",
+        ]
+        for panel_id in config_panels:
+            pattern = re.compile(
+                rf'(<(?:div|table|td|tr|form|fieldset)[^>]*\bid\s*=\s*["\']'
+                + re.escape(panel_id) +
+                r'["\'][^>]*)\s+style\s*=\s*["\'][^"\']*display\s*:\s*none[^"\']*["\']',
+                re.IGNORECASE,
+            )
+            new_text = pattern.sub(r'\1 style="display:block"', text)
+            if new_text != text:
+                mods.append(f"unhide_{panel_id}")
+                text = new_text
+
         new_text = re.sub(
-            r"setDisplay\s*\(\s*['\"](?:lan_table|wan_table|wifi_table|ConfigPanel|ListConfigPanel|DivMain)['\"]"
-            r"\s*,\s*0\s*\)",
+            r"setDisplay\s*\(\s*['\"][^'\"]+['\"]\s*,\s*0\s*\)",
             lambda m: m.group(0).replace(", 0)", ", 1)"),
             text,
         )
         if new_text != text:
-            mods.append("setDisplay->1")
+            mods.append("setDisplay_all->1")
+            text = new_text
+
+        new_text = re.sub(
+            r"setDisable\s*\(\s*['\"][^'\"]+['\"]\s*,\s*1\s*\)",
+            lambda m: m.group(0).replace(", 1)", ", 0)"),
+            text,
+        )
+        if new_text != text:
+            mods.append("setDisable_all->0")
             text = new_text
 
         new_text = re.sub(
@@ -497,6 +602,18 @@ class ONTResponseModifier:
 
         return text, mods
 
+    def _get_early_inject_js(self):
+        return """<script type="text/javascript">
+(function(){
+var _origDefineProperty=Object.defineProperty;
+Object.defineProperty=function(obj,prop,desc){
+if(prop==='curUserType'&&desc&&desc.value){desc.value='0';}
+return _origDefineProperty.call(this,obj,prop,desc);
+};
+window.__ontProxyAdmin=true;
+})();
+</script>"""
+
     def _get_inject_js(self):
         return """<script type="text/javascript">
 (function(){
@@ -505,51 +622,89 @@ if(typeof window.curUserType!=='undefined'){window.curUserType='0';}
 if(typeof window.sysUserType!=='undefined'){window.sysUserType='0';}
 if(typeof window.jumptomodifypwd!=='undefined'){window.jumptomodifypwd=1;}
 if(typeof window.PwdModifyFlag!=='undefined'){window.PwdModifyFlag=0;}
+if(typeof window.IsModifiedPwd!=='undefined'){window.IsModifiedPwd='1';}
+if(typeof window.pwdModifyFlag!=='undefined'){window.pwdModifyFlag='1';}
+if(typeof window.ConfigFlag!=='undefined'&&window.ConfigFlag){window.ConfigFlag='1#1#1';}
 if(typeof window.wlanFlag!=='undefined'){window.wlanFlag='1';}
 if(typeof window.tdeModeFlag!=='undefined'){window.tdeModeFlag='1';}
 if(typeof window.RosFlag!=='undefined'){window.RosFlag='1';}
 if(typeof window.SonetFlag!=='undefined'){window.SonetFlag='1';}
+if(typeof window.IsSupportWifi!=='undefined'){window.IsSupportWifi='1';}
+if(typeof window.IsPTVDFFlag!=='undefined'){window.IsPTVDFFlag='0';}
+if(typeof window.IsPTVDF!=='undefined'){window.IsPTVDF='0';}
+if(typeof window.IsSmartDev!=='undefined'){window.IsSmartDev='0';}
+if(typeof window.smartlanfeature!=='undefined'){window.smartlanfeature='0';}
+if(typeof window.apcmodefeature!=='undefined'){window.apcmodefeature='0';}
+if(typeof window.apghnfeature!=='undefined'){window.apghnfeature='0';}
+if(typeof window.supportPrivacyStatement!=='undefined'){window.supportPrivacyStatement='0';}
+if(typeof window.DirectGuideFlag!=='undefined'){window.DirectGuideFlag='1';}
+if(typeof window.mngttype!=='undefined'){window.mngttype='0';}
+if(typeof window.mngtpccwtype!=='undefined'){window.mngtpccwtype='0';}
+if(typeof window.TedataGuide!=='undefined'){window.TedataGuide='0';}
+if(typeof window.normalUserType!=='undefined'){window.normalUserType='999';}
+if(typeof window.FailStat!=='undefined'){window.FailStat='0';}
+if(typeof window.LoginTimes!=='undefined'){window.LoginTimes='0';}
+if(typeof window.LockLeftTime!=='undefined'){window.LockLeftTime='0';}
+if(typeof window.ModeCheckTimes!=='undefined'){window.ModeCheckTimes='0';}
 window.IsAdminUser=function(){return true;};
 window.TelnetOptionAvaliable=function(){return true;};
 window.IsOSKNormalUser=function(){return false;};
 window.IsE8cFrame=function(){return false;};
+window.gotoGuidePage=function(){};
+window.dbaa1AllowGotoGuidePage=function(){return false;};
+window.hideClaroFastsetting=function(){return false;};
+var _modalBlacklist=['modifyPwdBox','base_mask','pwd_modify','zhezhao',
+'showcmode','showcmode1','DivErrPage','DivErrPage2',
+'DivUpload','DivUploadMsg','DivInstalling','DivRestart',
+'DivFail','DivSuccess','DivCfgUpload','DivCfgProgress'];
 if(typeof window.setDisplay==='function'){
-var _origSetDisplay=window.setDisplay;
+var _origSD=window.setDisplay;
 window.setDisplay=function(id,sh){
-var keep=['lan_table','wan_table','wifi_table','DivMain',
-'ConfigPanel','ListConfigPanel','telnetwifiRow',
-'sshlanRow','sshwanRow','ftplanRow','ftpwanRow',
-'telnetlanRow','telnetwanRow','httplanRow','httpwanRow',
-'httpswanRow','portChange'];
 if(sh===0||sh==='0'){
-for(var i=0;i<keep.length;i++){
-if(id===keep[i]){return _origSetDisplay(id,1);}
+for(var i=0;i<_modalBlacklist.length;i++){
+if(id===_modalBlacklist[i]){return _origSD(id,0);}
 }
+return _origSD(id,1);
 }
-return _origSetDisplay(id,sh);
+return _origSD(id,sh);
 };}
 if(typeof window.setDisable==='function'){
-var _origSetDisable=window.setDisable;
+var _origSDis=window.setDisable;
 window.setDisable=function(id,flag){
-var never=['telnetlan','telnetwan','telnetwifi',
-'sshlan','sshwan','ftplan','ftpwan',
-'httplan','httpwan','httpwifi','httpswan',
-'bttnApply','cancelValue','btnApply'];
-if(flag===1||flag==='1'){
-for(var i=0;i<never.length;i++){
-if(id===never[i]){return _origSetDisable(id,0);}
+if(flag===1||flag==='1'){return _origSDis(id,0);}
+return _origSDis(id,flag);
+};}
+if(typeof window.setVisible==='function'){
+var _origSV=window.setVisible;
+window.setVisible=function(id,sh){
+if(sh===0||sh==='0'||sh===false){
+for(var i=0;i<_modalBlacklist.length;i++){
+if(id===_modalBlacklist[i]){return _origSV(id,false);}
 }
+return _origSV(id,true);
 }
-return _origSetDisable(id,flag);
+return _origSV(id,sh);
 };}
 function unhideAll(){
 var els=document.querySelectorAll('[style]');
 for(var i=0;i<els.length;i++){
 if(els[i].style.display==='none'){
+var dominated=false;
+for(var b=0;b<_modalBlacklist.length;b++){
+if(els[i].id===_modalBlacklist[b]){dominated=true;break;}
+}
+if(!dominated){
 var tag=els[i].tagName.toLowerCase();
-if(tag==='form'||tag==='div'||tag==='tr'||tag==='td'||tag==='table'||tag==='li'){
+if(tag==='form'||tag==='div'||tag==='tr'||tag==='td'||
+tag==='table'||tag==='li'||tag==='fieldset'||tag==='section'||
+tag==='span'||tag==='p'||tag==='input'||tag==='select'||
+tag==='button'||tag==='textarea'){
 els[i].style.display='';
 }
+}
+}
+if(els[i].style.visibility==='hidden'){
+els[i].style.visibility='visible';
 }
 }
 var disabled=document.querySelectorAll('[disabled]');
@@ -557,17 +712,80 @@ for(var j=0;j<disabled.length;j++){
 var t=disabled[j].tagName.toLowerCase();
 if(t==='input'||t==='select'||t==='button'||t==='textarea'){
 disabled[j].disabled=false;
+disabled[j].removeAttribute('disabled');
 disabled[j].classList.remove('osgidisable');
+disabled[j].classList.remove('Disable');
+disabled[j].style.removeProperty('background-color');
 }
+}
+var readOnly=document.querySelectorAll('[readonly]');
+for(var r=0;r<readOnly.length;r++){
+readOnly[r].removeAttribute('readonly');
+}
+var collapsed=document.querySelectorAll('.Menuhide,.collapsed,.hide');
+for(var c=0;c<collapsed.length;c++){
+collapsed[c].classList.remove('Menuhide');
+collapsed[c].classList.remove('collapsed');
+collapsed[c].classList.remove('hide');
+}
+var menuIframe=document.getElementById('menuIframe');
+if(menuIframe&&(!menuIframe.src||menuIframe.src===''||menuIframe.src==='about:blank')){
+if(typeof window.menuJsonData!=='undefined'&&window.menuJsonData&&window.menuJsonData.length>0){
+var firstUrl='';
+for(var k=0;k<window.menuJsonData.length;k++){
+if(window.menuJsonData[k].submenu){
+for(var l=0;l<window.menuJsonData[k].submenu.length;l++){
+var sm=window.menuJsonData[k].submenu[l];
+if(sm.url&&sm.url!==''){firstUrl=sm.url;break;}
+if(sm.submenu){
+for(var m=0;m<sm.submenu.length;m++){
+if(sm.submenu[m].url){firstUrl=sm.submenu[m].url;break;}
+}
+if(firstUrl)break;
+}
+}
+if(firstUrl)break;
+}
+}
+if(firstUrl){menuIframe.src=firstUrl;}
+else{menuIframe.src='CustomApp/mainpage.asp';}
+}else{menuIframe.src='CustomApp/mainpage.asp';}
 }
 }
 if(document.readyState==='loading'){
-document.addEventListener('DOMContentLoaded',function(){setTimeout(unhideAll,200);});
+document.addEventListener('DOMContentLoaded',function(){setTimeout(unhideAll,100);});
 }else{
-setTimeout(unhideAll,200);
+setTimeout(unhideAll,100);
 }
-setTimeout(unhideAll,1000);
+setTimeout(unhideAll,500);
+setTimeout(unhideAll,1500);
 setTimeout(unhideAll,3000);
+setTimeout(unhideAll,6000);
+var _observer=new MutationObserver(function(mutations){
+for(var i=0;i<mutations.length;i++){
+var m=mutations[i];
+if(m.type==='attributes'){
+var el=m.target;
+var dominated=false;
+for(var b=0;b<_modalBlacklist.length;b++){
+if(el.id===_modalBlacklist[b]){dominated=true;break;}
+}
+if(!dominated){
+if(m.attributeName==='style'&&el.style.display==='none'){
+el.style.display='';
+}
+if(m.attributeName==='disabled'&&el.disabled){
+el.disabled=false;
+el.removeAttribute('disabled');
+}
+}
+}
+}
+});
+_observer.observe(document.documentElement,{
+attributes:true,attributeFilter:['style','disabled','class'],
+subtree:true
+});
 }catch(e){}
 })();
 </script>"""
