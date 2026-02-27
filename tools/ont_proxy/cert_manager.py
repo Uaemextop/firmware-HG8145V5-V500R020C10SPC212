@@ -164,20 +164,29 @@ def install_ca_windows():
 
     cert_path = os.path.abspath(config.CA_CERT_FILE).replace("/", "\\")
     ps_script = (
-        f'$cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2("{cert_path}"); '
-        f'$store = New-Object System.Security.Cryptography.X509Certificates.X509Store("Root", "LocalMachine"); '
-        f"$store.Open('ReadWrite'); "
-        f"$store.Add($cert); "
-        f"$store.Close(); "
-        f"Write-Host \"[+] CA certificate installed in Root store\""
+        f'$cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2("{cert_path}")\n'
+        f'$store = New-Object System.Security.Cryptography.X509Certificates.X509Store("Root", "LocalMachine")\n'
+        f'$store.Open("ReadWrite")\n'
+        f'$store.Add($cert)\n'
+        f'$store.Close()\n'
+        f'Write-Host "[+] CA certificate installed in Root store"'
     )
 
+    import tempfile
+    ps1_path = os.path.join(tempfile.gettempdir(), "ont_proxy_install_ca.ps1")
     try:
+        with open(ps1_path, "w", encoding="utf-8") as f:
+            f.write(ps_script)
+
         result = subprocess.run(
-            ["powershell", "-Command", f"Start-Process powershell -Verb RunAs -ArgumentList '-Command {ps_script}'"],
+            [
+                "powershell", "-Command",
+                f'Start-Process powershell -Verb RunAs -Wait -ArgumentList '
+                f'"-ExecutionPolicy Bypass -File \\"{ps1_path}\\""',
+            ],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=60,
         )
         if result.returncode == 0:
             print("[+] CA certificate installation initiated (UAC prompt may appear)")
@@ -190,6 +199,9 @@ def install_ca_windows():
     except subprocess.TimeoutExpired:
         print("[!] PowerShell timed out")
         return False
+    finally:
+        if os.path.exists(ps1_path):
+            os.remove(ps1_path)
 
 
 def uninstall_ca_windows():
@@ -198,20 +210,29 @@ def uninstall_ca_windows():
         return False
 
     ps_script = (
-        f'$store = New-Object System.Security.Cryptography.X509Certificates.X509Store("Root", "LocalMachine"); '
-        f"$store.Open('ReadWrite'); "
-        f'$certs = $store.Certificates | Where-Object {{ $_.Subject -like "*{config.CA_CERT_NAME}*" }}; '
-        f"foreach ($c in $certs) {{ $store.Remove($c) }}; "
-        f"$store.Close(); "
-        f"Write-Host \"[+] CA certificate removed from Root store\""
+        f'$store = New-Object System.Security.Cryptography.X509Certificates.X509Store("Root", "LocalMachine")\n'
+        f'$store.Open("ReadWrite")\n'
+        f'$certs = $store.Certificates | Where-Object {{ $_.Subject -like "*{config.CA_CERT_NAME}*" }}\n'
+        f'foreach ($c in $certs) {{ $store.Remove($c) }}\n'
+        f'$store.Close()\n'
+        f'Write-Host "[+] CA certificate removed from Root store"'
     )
 
+    import tempfile
+    ps1_path = os.path.join(tempfile.gettempdir(), "ont_proxy_uninstall_ca.ps1")
     try:
+        with open(ps1_path, "w", encoding="utf-8") as f:
+            f.write(ps_script)
+
         result = subprocess.run(
-            ["powershell", "-Command", f"Start-Process powershell -Verb RunAs -ArgumentList '-Command {ps_script}'"],
+            [
+                "powershell", "-Command",
+                f'Start-Process powershell -Verb RunAs -Wait -ArgumentList '
+                f'"-ExecutionPolicy Bypass -File \\"{ps1_path}\\""',
+            ],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=60,
         )
         if result.returncode == 0:
             print("[+] CA certificate uninstallation initiated")
@@ -219,6 +240,9 @@ def uninstall_ca_windows():
         return False
     except (FileNotFoundError, subprocess.TimeoutExpired):
         return False
+    finally:
+        if os.path.exists(ps1_path):
+            os.remove(ps1_path)
 
 
 def main():

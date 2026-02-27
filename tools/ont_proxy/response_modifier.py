@@ -17,10 +17,15 @@ This addon is loaded by mitmproxy via: mitmdump -s response_modifier.py
 
 import re
 import os
+import sys
 import json
 import datetime
 
-from . import config
+try:
+    from . import config
+except ImportError:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import config
 
 
 class ONTResponseModifier:
