@@ -173,6 +173,7 @@ class ONTResponseModifier:
         maint_item["subMenus"] = [
             self._menu_item("Software Upgrade", "fireware", 3, url="html/ssmp/fireware/firmware.asp"),
             self._menu_item("Configuration File Management", "cfgconfig", 3, url="html/ssmp/cfgfile/cfgfile.asp"),
+            self._menu_item("Configuration File (Root)", "cfgconfigroot", 3, url="html/ssmp/cfgfile/cfgfileroot.asp"),
             self._menu_item("Maintenance", "maintainconfig", 3, url="html/bbsp/maintenance/diagnosecommon.asp"),
             self._menu_item("User Log", "userlog", 3, url="html/ssmp/userlog/logview.asp"),
             self._menu_item("Firewall Log", "firewalllog", 3, url="html/bbsp/firewalllog/firewalllogview.asp"),
@@ -439,6 +440,33 @@ class ONTResponseModifier:
             text = new_text
 
         new_text = re.sub(
+            r'var\s+IsWebLoadConfigfile\s*=\s*["\']0["\']',
+            'var IsWebLoadConfigfile = "1"',
+            text,
+        )
+        if new_text != text:
+            mods.append("IsWebLoadConfigfile->1")
+            text = new_text
+
+        new_text = re.sub(
+            r'var\s+NormalUpdownCfg\s*=\s*["\']0["\']',
+            'var NormalUpdownCfg = "1"',
+            text,
+        )
+        if new_text != text:
+            mods.append("NormalUpdownCfg->1")
+            text = new_text
+
+        new_text = re.sub(
+            r'var\s+AutoUpdateEnable\s*=\s*["\']0["\']',
+            'var AutoUpdateEnable = "1"',
+            text,
+        )
+        if new_text != text:
+            mods.append("AutoUpdateEnable->1")
+            text = new_text
+
+        new_text = re.sub(
             r"(UserLevel\s*==\s*)1",
             r"\g<1>0",
             text,
@@ -515,10 +543,13 @@ class ONTResponseModifier:
         config_panels = [
             "ConfigForm", "ConfigPanel", "ListConfigPanel", "TableConfigInfo",
             "OntReset", "OntRestore", "tableautoupgrade", "localtext",
-            "uploadConfig", "downloadConfig", "websslpage",
-            "lan_table", "wan_table", "wifi_table", "DivMain",
+            "uploadConfig", "downloadConfig", "saveConfig", "SaveCfgInfo",
+            "downloadApConfig", "ApDeviceListInfo", "downloadApConfigTable",
+            "websslpage", "lan_table", "wan_table", "wifi_table", "DivMain",
             "DivWRR", "DivSP", "DivQueueManagement", "DivAuthentication",
             "wlaninfo", "itmsinfo", "divdiagnose", "diagnoseresult",
+            "content", "pwdvalue1", "pwdvalue2", "pwdvalue5",
+            "tPwdGponValue", "tHexPwdValue", "checkinfo1", "userpwdsafe",
         ]
         for panel_id in config_panels:
             pattern = re.compile(
