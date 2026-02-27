@@ -25,6 +25,12 @@ LOG_FILE = os.path.join(LOG_DIR, "traffic.log")
 ADMIN_USER_TYPE = "0"
 NORMAL_USER_TYPE = "1"
 
+ONT_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/120.0.0.0 Safari/537.36"
+)
+
 ADMIN_ONLY_MENU_ITEMS = [
     {
         "MenuLevel": "2",
@@ -42,13 +48,6 @@ ADMIN_ONLY_MENU_ITEMS = [
     },
     {
         "MenuLevel": "3",
-        "MenuName": "LAN-PON Link Binding",
-        "MenuID": "lanponbind",
-        "featurectrl": "HW_AMP_FEATURE_ETHPON_BIND",
-        "url": "html/amp/ethponbind/ethponbind.asp",
-    },
-    {
-        "MenuLevel": "3",
         "MenuName": "DHCP Static IP",
         "MenuID": "landhcpstatic",
         "featurectrl": "BBSP_FT_DHCP_MAIN",
@@ -60,13 +59,6 @@ ADMIN_ONLY_MENU_ITEMS = [
         "MenuID": "landhcpv6static",
         "featurectrl": "BBSP_FT_IPV6_DHCP6S",
         "url": "html/bbsp/dhcpstaticaddr/dhcpstaticaddress.asp",
-    },
-    {
-        "MenuLevel": "3",
-        "MenuName": "Port Locating",
-        "MenuID": "option82",
-        "featurectrl": "BBSP_FT_DHCP_OPTION82",
-        "url": "html/bbsp/dhcp/option82.asp",
     },
     {
         "MenuLevel": "3",
@@ -91,31 +83,16 @@ ADMIN_ONLY_MENU_ITEMS = [
     },
     {
         "MenuLevel": "3",
+        "MenuName": "Full Access Control",
+        "MenuID": "fullaclconfig",
+        "url": "html/bbsp/acl/acl.asp",
+    },
+    {
+        "MenuLevel": "3",
         "MenuName": "WAN Access Control",
         "MenuID": "wanacl",
         "featurectrl": "BBSP_FT_WAN_COMMONV5",
         "url": "html/bbsp/wanacl/wanacl.asp",
-    },
-    {
-        "MenuLevel": "3",
-        "MenuName": "Internet Access Control",
-        "MenuID": "internetcontrol",
-        "featurectrl": "BBSP_FT_EBG_INTERNETCONTROL",
-        "url": "html/bbsp/internetcontrol/internetcontrol.asp",
-    },
-    {
-        "MenuLevel": "3",
-        "MenuName": "802.1X Global Configuration",
-        "MenuID": "globalcontrol",
-        "featurectrl": "HW_BBSP_FEATURE_8021X",
-        "url": "html/bbsp/8021x/8021x_global.asp",
-    },
-    {
-        "MenuLevel": "3",
-        "MenuName": "802.1X Port Configuration",
-        "MenuID": "portcontrol",
-        "featurectrl": "HW_BBSP_FEATURE_8021X",
-        "url": "html/bbsp/8021x/8021x_port.asp",
     },
 ]
 
@@ -193,13 +170,6 @@ ADMIN_ONLY_FORWARD_RULES = [
         "featurectrl": "BBSP_FT_PORTTRIGGER_IP",
         "url": "html/bbsp/porttrigger/porttrigger.asp",
     },
-    {
-        "MenuLevel": "3",
-        "MenuName": "IPv6 Port Mapping",
-        "MenuID": "ipv6portmapping",
-        "featurectrl": "BBSP_FT_IPV6_PORTMAPPING",
-        "url": "html/bbsp/ipv6portmapping/ipv6portmapping.asp",
-    },
 ]
 
 ADMIN_ONLY_APPS = [
@@ -233,13 +203,6 @@ ADMIN_ONLY_APPS = [
     },
     {
         "MenuLevel": "3",
-        "MenuName": "Video Device Identification",
-        "MenuID": "video",
-        "featurectrl": "BBSP_FT_VIDEO_CFG",
-        "url": "html/bbsp/video/video.asp",
-    },
-    {
-        "MenuLevel": "3",
         "MenuName": "ARP Ping",
         "MenuID": "arp",
         "featurectrl": "BBSP_FT_ARP_COMMONV5|BBSP_FT_WAN",
@@ -251,20 +214,6 @@ ADMIN_ONLY_APPS = [
         "MenuID": "dnsconfiguration",
         "featurectrl": "BBSP_FT_L3_ALL",
         "url": "html/bbsp/dnsconfiguration/dnsconfigcommon.asp",
-    },
-    {
-        "MenuLevel": "3",
-        "MenuName": "Device Type Identification",
-        "MenuID": "deviceidfy",
-        "featurectrl": "FT_UNI_DEVICE_DETETION",
-        "url": "html/bbsp/deviceidentify/deviceidentification.asp",
-    },
-    {
-        "MenuLevel": "3",
-        "MenuName": "LLDP",
-        "MenuID": "lldp",
-        "featurectrl": "HW_BBSP_FT_LLDP",
-        "url": "html/bbsp/lldp/lldp.asp",
     },
 ]
 
@@ -297,13 +246,6 @@ ADMIN_ONLY_MAINTENANCE = [
         "MenuName": "Configuration File Management",
         "MenuID": "cfgconfig",
         "url": "html/ssmp/cfgfile/cfgfile.asp",
-    },
-    {
-        "MenuLevel": "3",
-        "MenuName": "Upstream Port",
-        "MenuID": "upportconfig",
-        "featurectrl": "FT_PON_UPPORT_CONFIG",
-        "url": "html/ssmp/mainupportcfg/mainupportconfig.asp",
     },
     {
         "MenuLevel": "3",

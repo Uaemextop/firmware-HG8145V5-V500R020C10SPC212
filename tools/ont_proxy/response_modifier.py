@@ -64,8 +64,6 @@ class ONTResponseModifier:
             self._menu_item("Eth Port", "ethinfo", 2, url="html/amp/ethinfo/ethinfo.asp"),
             self._menu_item("WLAN", "wlaninfo", 2, url="html/amp/wlaninfo/wlaninfo.asp"),
             self._menu_item("Home Network", "wlancoverinfo", 2, url="html/amp/wificoverinfo/wlancoverinfo.asp"),
-            self._menu_item("Cloud Platform Status", "osgiplugin", 2, url="html/ssmp/osgiplugin/pluginstatusabroad.asp"),
-            self._menu_item("PoE", "poeinfo", 2, url="html/amp/poeinfo/poeStats.asp"),
         ]
         items.append(sysinfo)
 
@@ -80,13 +78,11 @@ class ONTResponseModifier:
         lan_item["subMenus"] = [
             self._menu_item("Layer 2/3 Port", "lanportconfig", 3, url="html/bbsp/layer3/layer3.asp"),
             self._menu_item("LAN Host", "lanhostconfig", 3, url="html/bbsp/dhcp/dhcp.asp"),
-            self._menu_item("LAN-PON Link Binding", "lanponbind", 3, url="html/amp/ethponbind/ethponbind.asp"),
             self._menu_item("DHCP Server", "landhcp", 3, url="html/bbsp/dhcpservercfg/dhcp2.asp"),
             self._menu_item("DHCP Static IP", "landhcpstatic", 3, url="html/bbsp/dhcpstatic/dhcpstatic.asp"),
             self._menu_item("DHCPv6 Server", "landhcpv6", 3, url="html/bbsp/lanaddress/lanaddress.asp"),
             self._menu_item("DHCPv6 Static IP", "landhcpv6static", 3, url="html/bbsp/dhcpstaticaddr/dhcpstaticaddress.asp"),
             self._menu_item("DHCPv6 Information", "landhcpv6info", 3, url="html/bbsp/dhcpv6info/dhcpv6info.asp"),
-            self._menu_item("Port Locating", "option82", 3, url="html/bbsp/dhcp/option82.asp"),
         ]
         advanced["subMenus"].append(lan_item)
 
@@ -98,13 +94,10 @@ class ONTResponseModifier:
             self._menu_item("Wi-Fi MAC Filtering", "wlanmacfilter", 3, url="html/bbsp/wlanmacfilter/wlanmacfilter.asp"),
             self._menu_item("Parental Control", "parentalctrl", 3, url="html/bbsp/parentalctrl/parentalctrlstatus.asp"),
             self._menu_item("DoS Configuration", "dos", 3, url="html/bbsp/Dos/Dos.asp"),
-            self._menu_item("Precise Device Access Control", "portacl", 3, url="html/bbsp/portacl/newacl.asp"),
             self._menu_item("Device Access Control", "ontaccess", 3, url="html/bbsp/acl/aclsmart.asp"),
+            self._menu_item("Full Access Control", "fullaclconfig", 3, url="html/bbsp/acl/acl.asp"),
             self._menu_item("WAN Access Control", "wanacl", 3, url="html/bbsp/wanacl/wanacl.asp"),
             self._menu_item("IPv6 Filtering", "ipv6ipincoming", 3, url="html/bbsp/ipv6ipincoming/ipv6ipincoming.asp"),
-            self._menu_item("Internet Access Control", "internetcontrol", 3, url="html/bbsp/internetcontrol/internetcontrol.asp"),
-            self._menu_item("802.1X Global Configuration", "globalcontrol", 3, url="html/bbsp/8021x/8021x_global.asp"),
-            self._menu_item("802.1X Port Configuration", "portcontrol", 3, url="html/bbsp/8021x/8021x_port.asp"),
         ]
         advanced["subMenus"].append(security_item)
 
@@ -126,7 +119,6 @@ class ONTResponseModifier:
             self._menu_item("DMZ Function", "dmz", 3, url="html/bbsp/dmz/dmz.asp"),
             self._menu_item("IPv4 Port Mapping", "portmapping", 3, url="html/bbsp/portmapping/portmapping.asp"),
             self._menu_item("Port Trigger", "porttrigger", 3, url="html/bbsp/porttrigger/porttrigger.asp"),
-            self._menu_item("IPv6 Port Mapping", "ipv6portmapping", 3, url="html/bbsp/ipv6portmapping/ipv6portmapping.asp"),
         ]
         advanced["subMenus"].append(fwd_item)
 
@@ -140,13 +132,10 @@ class ONTResponseModifier:
             self._menu_item("UPnP", "upnp", 3, url="html/bbsp/upnp/upnp.asp"),
             self._menu_item("IGMP", "igmp", 3, url="html/bbsp/igmp/igmp.asp"),
             self._menu_item("Intelligent Channel", "qossmart", 3, url="html/bbsp/qossmart/qossmart.asp"),
-            self._menu_item("Video Device Identification", "video", 3, url="html/bbsp/video/video.asp"),
             self._menu_item("ARP Ping", "arp", 3, url="html/bbsp/arpping/arpping.asp"),
             self._menu_item("Static DNS", "dnsconfiguration", 3, url="html/bbsp/dnsconfiguration/dnsconfigcommon.asp"),
-            self._menu_item("Device Type Identification", "deviceidfy", 3, url="html/bbsp/deviceidentify/deviceidentification.asp"),
             self._menu_item("DSCP-to-Pbit Mapping", "DSCPMapping", 3, url="html/bbsp/dscptopbit/dscptopbit.asp"),
             self._menu_item("LAN Port Multi-service", "lanservicecfg", 3, url="html/bbsp/lanservicecfg/lanservicecfg.asp"),
-            self._menu_item("LLDP", "lldp", 3, url="html/bbsp/lldp/lldp.asp"),
         ]
         advanced["subMenus"].append(app_item)
 
@@ -184,7 +173,6 @@ class ONTResponseModifier:
         maint_item["subMenus"] = [
             self._menu_item("Software Upgrade", "fireware", 3, url="html/ssmp/fireware/firmware.asp"),
             self._menu_item("Configuration File Management", "cfgconfig", 3, url="html/ssmp/cfgfile/cfgfile.asp"),
-            self._menu_item("Upstream Port", "upportconfig", 3, url="html/ssmp/mainupportcfg/mainupportconfig.asp"),
             self._menu_item("Maintenance", "maintainconfig", 3, url="html/bbsp/maintenance/diagnosecommon.asp"),
             self._menu_item("User Log", "userlog", 3, url="html/ssmp/userlog/logview.asp"),
             self._menu_item("Firewall Log", "firewalllog", 3, url="html/bbsp/firewalllog/firewalllogview.asp"),
@@ -200,27 +188,6 @@ class ONTResponseModifier:
         ]
         advanced["subMenus"].append(maint_item)
 
-        poe_item = self._menu_item("PoE Configuration", "poecfg", 2, url="html/amp/poecfg/poecfg.asp")
-        advanced["subMenus"].append(poe_item)
-
-        powercube_item = self._menu_item("PowerCube", "powercube", 2)
-        powercube_item["subMenus"] = [
-            self._menu_item("PowerCube Basic Information", "energybaseinfo", 3, url="html/ssmp/energybaseinfo/energybaseinfo.asp"),
-            self._menu_item("PowerCube Battery Information", "energybasebatteryinfo", 3, url="html/ssmp/energybasebatteryinfo/energybasebatteryinfo.asp"),
-            self._menu_item("PowerCube Alarms", "energybasewarning", 3, url="html/ssmp/energybasewarning/energybasewarning.asp"),
-            self._menu_item("PowerCube Configuration", "energybasecfg", 3, url="html/ssmp/energybasecfg/energybasecfg.asp"),
-        ]
-        advanced["subMenus"].append(powercube_item)
-
-        bundle_item = self._menu_item("Bundle", "bundleconfig", 2)
-        bundle_item["subMenus"] = [
-            self._menu_item("Bundle Load", "bundle", 3, url="html/ssmp/smartontinfo/bundle.asp"),
-            self._menu_item("Bundle", "bundleinfo", 3, url="html/ssmp/smartontinfo/bundleinfo.asp"),
-            self._menu_item("Bundle Information", "bundlestatus", 3, url="html/ssmp/smartontinfo/bundlestatus.asp"),
-            self._menu_item("JVM Resource Monitoring", "jvmtatus", 3, url="html/ssmp/smartontinfo/JVMResourceMonitoring.asp"),
-        ]
-        advanced["subMenus"].append(bundle_item)
-
         items.append(advanced)
         self._menu_cache = json.dumps(items)
 
@@ -233,7 +200,23 @@ class ONTResponseModifier:
         return item
 
     def request(self, flow):
-        pass
+        if flow.request.host != config.ONT_HOST:
+            return
+        flow.request.headers.pop("If-Modified-Since", None)
+        flow.request.headers.pop("If-None-Match", None)
+        flow.request.headers["Cache-Control"] = "no-cache"
+        flow.request.headers["User-Agent"] = config.ONT_USER_AGENT
+        flow.request.headers["Host"] = config.ONT_HOST
+        if "Accept" not in flow.request.headers:
+            flow.request.headers["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+        if "Referer" in flow.request.headers:
+            flow.request.headers["Referer"] = re.sub(
+                r"https?://[^/]+",
+                f"http://{config.ONT_HOST}",
+                flow.request.headers["Referer"],
+            )
+        if "Origin" in flow.request.headers:
+            flow.request.headers["Origin"] = f"http://{config.ONT_HOST}"
 
     def response(self, flow):
         if flow.request.host != config.ONT_HOST:
@@ -244,12 +227,15 @@ class ONTResponseModifier:
         modified = False
         details = []
 
+        flow.response.headers.pop("X-Frame-Options", None)
+        flow.response.headers.pop("Content-Security-Policy", None)
+        flow.response.headers.pop("X-Content-Type-Options", None)
+        flow.response.headers["Cache-Control"] = "no-cache, no-store"
+
         if self._is_user_type_endpoint(flow):
-            original = flow.response.get_text()
-            if original and original.strip() == config.NORMAL_USER_TYPE:
-                flow.response.set_text(config.ADMIN_USER_TYPE)
-                modified = True
-                details.append("UserType 1->0")
+            flow.response.set_text(config.ADMIN_USER_TYPE)
+            modified = True
+            details.append("UserType->0")
 
         elif self._is_menu_endpoint(flow):
             if self._menu_cache:
@@ -330,8 +316,53 @@ class ONTResponseModifier:
             mods.append("force_admin_check")
             text = new_text
 
+        new_text = re.sub(
+            r"function\s+IsAdminUser\s*\(\s*\)\s*\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}",
+            "function IsAdminUser() { return true; }",
+            text,
+        )
+        if new_text != text:
+            mods.append("IsAdminUser->true")
+            text = new_text
+
+        new_text = re.sub(
+            r"IsAdminUser\s*\(\s*\)\s*==\s*false",
+            "false",
+            text,
+        )
+        if new_text != text:
+            mods.append("IsAdminUser_false->false")
+            text = new_text
+
+        new_text = re.sub(
+            r"IsAdminUser\s*\(\s*\)\s*==\s*true",
+            "true",
+            text,
+        )
+        if new_text != text:
+            mods.append("IsAdminUser_true->true")
+            text = new_text
+
+        new_text = re.sub(
+            r"(curUserType\s*==\s*['\"]?)1(['\"]?)",
+            r"\g<1>0\2",
+            text,
+        )
+        if new_text != text:
+            mods.append("curUserType_eq1->0")
+            text = new_text
+
+        new_text = re.sub(
+            r"(curUserType\s*!=\s*['\"]?)0(['\"]?)",
+            r"\g<1>__NEVER__\2",
+            text,
+        )
+        if new_text != text:
+            mods.append("curUserType_ne0->never")
+            text = new_text
+
         feature_pattern = re.compile(
-            r"var\s+(wlanFlag|tdeModeFlag|SonetFlag|IsSmartDev|IsPTVDF|IsSmartLanDev|RosFlag)\s*=\s*'0'"
+            r"var\s+(wlanFlag|tdeModeFlag|SonetFlag|RosFlag)\s*=\s*'0'"
         )
         new_text = feature_pattern.sub(
             lambda m: f"var {m.group(1)} = '1'",
@@ -359,29 +390,187 @@ class ONTResponseModifier:
             mods.append("UserLevel_assign->0")
             text = new_text
 
-        if "acl" in url.lower() or "access" in url.lower():
-            for field in ["TelnetLanEnable", "TelnetWanEnable", "TelnetWifiEnable",
-                          "SSHLanEnable", "SSHWanEnable",
-                          "FtpLanEnable", "FtpWanEnable",
-                          "HttpsLanEnable", "HttpsWanEnable"]:
-                pattern = re.compile(rf'({field}\s*=\s*")0(")')
-                new_text = pattern.sub(r'\g<1>1\2', text)
-                if new_text != text:
-                    mods.append(f"{field}->1")
-                    text = new_text
-
         new_text = re.sub(
-            r"(style\s*=\s*[\"'])([^\"']*display\s*:\s*none[^\"']*?)([\"'])",
-            lambda m: m.group(1) + m.group(2).replace("display:none", "display:block").replace("display: none", "display: block") + m.group(3)
-            if "admin" in url.lower() or "acl" in url.lower() or "debug" in url.lower()
-            else m.group(0),
+            r"(UserLevel\s*!=\s*)0",
+            r"\g<1>__NEVER__",
             text,
         )
         if new_text != text:
-            mods.append("unhide_elements")
+            mods.append("UserLevel_ne0->never")
             text = new_text
 
+        acl_fields = [
+            "TelnetLanEnable", "TELNETLanEnable", "TelnetWanEnable", "TELNETWanEnable",
+            "TelnetWifiEnable", "TELNETWifiEnable",
+            "SSHLanEnable", "SSHWanEnable",
+            "FtpLanEnable", "FTPLanEnable", "FtpWanEnable", "FTPWanEnable",
+            "HttpLanEnable", "HTTPLanEnable", "HttpWanEnable", "HTTPWanEnable",
+            "HttpWifiEnable", "HTTPWifiEnable",
+            "HttpsLanEnable", "HTTPSLanEnable", "HttpsWanEnable", "HTTPSWanEnable",
+        ]
+        for field in acl_fields:
+            pattern = re.compile(rf'((?:this\.)?{field}\s*=\s*["\']?)0(["\']?[;,\s)])')
+            new_text = pattern.sub(r'\g<1>1\2', text)
+            if new_text != text:
+                mods.append(f"{field}->1")
+                text = new_text
+
+        new_text = re.sub(
+            r'(<body[^>]*)\s+style\s*=\s*["\'][^"\']*display\s*:\s*none[^"\']*["\']',
+            r'\1',
+            text,
+            flags=re.IGNORECASE,
+        )
+        if new_text != text:
+            mods.append("unhide_body")
+            text = new_text
+
+        new_text = re.sub(
+            r'(<form[^>]*)\s+style\s*=\s*["\']display\s*:\s*none\s*;?\s*["\']',
+            r'\1 style="display:block"',
+            text,
+            flags=re.IGNORECASE,
+        )
+        if new_text != text:
+            mods.append("unhide_forms")
+            text = new_text
+
+        new_text = re.sub(
+            r"setDisplay\s*\(\s*['\"](?:lan_table|wan_table|wifi_table|ConfigPanel|ListConfigPanel|DivMain)['\"]"
+            r"\s*,\s*0\s*\)",
+            lambda m: m.group(0).replace(", 0)", ", 1)"),
+            text,
+        )
+        if new_text != text:
+            mods.append("setDisplay->1")
+            text = new_text
+
+        new_text = re.sub(
+            r"TelnetOptionAvaliable\s*\(\s*\)\s*==\s*true",
+            "true",
+            text,
+        )
+        if new_text != text:
+            mods.append("TelnetOption->true")
+            text = new_text
+
+        new_text = re.sub(
+            r"TelnetOptionAvaliable\s*\(\s*\)\s*==\s*false",
+            "false",
+            text,
+        )
+        if new_text != text:
+            mods.append("TelnetOption_false->false")
+            text = new_text
+
+        new_text = re.sub(
+            r"function\s+TelnetOptionAvaliable\s*\(\s*\)\s*\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}",
+            "function TelnetOptionAvaliable() { return true; }",
+            text,
+        )
+        if new_text != text:
+            mods.append("TelnetOptionAvaliable->true")
+            text = new_text
+
+        new_text = re.sub(
+            r"function\s+IsOSKNormalUser\s*\(\s*\)\s*\{[^}]*(?:\{[^}]*\}[^}]*)*\}",
+            "function IsOSKNormalUser() { return false; }",
+            text,
+        )
+        if new_text != text:
+            mods.append("IsOSKNormalUser->false")
+            text = new_text
+
+        new_text = re.sub(
+            r"function\s+filterUserInfo\s*\([^)]*\)\s*\{[^}]*(?:\{[^}]*\}[^}]*)*\}",
+            "function filterUserInfo(userInfo) { return userInfo.Enable != 1; }",
+            text,
+        )
+        if new_text != text:
+            mods.append("filterUserInfo->all")
+            text = new_text
+
+        if "</body>" in text.lower():
+            text = text.replace("</body>", self._get_inject_js() + "</body>")
+            text = text.replace("</BODY>", self._get_inject_js() + "</BODY>")
+            mods.append("js_injected")
+
         return text, mods
+
+    def _get_inject_js(self):
+        return """<script type="text/javascript">
+(function(){
+try{
+if(typeof window.curUserType!=='undefined'){window.curUserType='0';}
+if(typeof window.sysUserType!=='undefined'){window.sysUserType='0';}
+if(typeof window.jumptomodifypwd!=='undefined'){window.jumptomodifypwd=1;}
+if(typeof window.PwdModifyFlag!=='undefined'){window.PwdModifyFlag=0;}
+if(typeof window.wlanFlag!=='undefined'){window.wlanFlag='1';}
+if(typeof window.tdeModeFlag!=='undefined'){window.tdeModeFlag='1';}
+if(typeof window.RosFlag!=='undefined'){window.RosFlag='1';}
+if(typeof window.SonetFlag!=='undefined'){window.SonetFlag='1';}
+window.IsAdminUser=function(){return true;};
+window.TelnetOptionAvaliable=function(){return true;};
+window.IsOSKNormalUser=function(){return false;};
+window.IsE8cFrame=function(){return false;};
+if(typeof window.setDisplay==='function'){
+var _origSetDisplay=window.setDisplay;
+window.setDisplay=function(id,sh){
+var keep=['lan_table','wan_table','wifi_table','DivMain',
+'ConfigPanel','ListConfigPanel','telnetwifiRow',
+'sshlanRow','sshwanRow','ftplanRow','ftpwanRow',
+'telnetlanRow','telnetwanRow','httplanRow','httpwanRow',
+'httpswanRow','portChange'];
+if(sh===0||sh==='0'){
+for(var i=0;i<keep.length;i++){
+if(id===keep[i]){return _origSetDisplay(id,1);}
+}
+}
+return _origSetDisplay(id,sh);
+};}
+if(typeof window.setDisable==='function'){
+var _origSetDisable=window.setDisable;
+window.setDisable=function(id,flag){
+var never=['telnetlan','telnetwan','telnetwifi',
+'sshlan','sshwan','ftplan','ftpwan',
+'httplan','httpwan','httpwifi','httpswan',
+'bttnApply','cancelValue','btnApply'];
+if(flag===1||flag==='1'){
+for(var i=0;i<never.length;i++){
+if(id===never[i]){return _origSetDisable(id,0);}
+}
+}
+return _origSetDisable(id,flag);
+};}
+function unhideAll(){
+var els=document.querySelectorAll('[style]');
+for(var i=0;i<els.length;i++){
+if(els[i].style.display==='none'){
+var tag=els[i].tagName.toLowerCase();
+if(tag==='form'||tag==='div'||tag==='tr'||tag==='td'||tag==='table'||tag==='li'){
+els[i].style.display='';
+}
+}
+}
+var disabled=document.querySelectorAll('[disabled]');
+for(var j=0;j<disabled.length;j++){
+var t=disabled[j].tagName.toLowerCase();
+if(t==='input'||t==='select'||t==='button'||t==='textarea'){
+disabled[j].disabled=false;
+disabled[j].classList.remove('osgidisable');
+}
+}
+}
+if(document.readyState==='loading'){
+document.addEventListener('DOMContentLoaded',function(){setTimeout(unhideAll,200);});
+}else{
+setTimeout(unhideAll,200);
+}
+setTimeout(unhideAll,1000);
+setTimeout(unhideAll,3000);
+}catch(e){}
+})();
+</script>"""
 
 
 addons = [ONTResponseModifier()]
