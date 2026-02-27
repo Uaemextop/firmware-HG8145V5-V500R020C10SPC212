@@ -1,0 +1,7 @@
+certs/
+captured_traffic/
+__pycache__/
+*.pyc
+*.pyo
+*.log
+.DS_Store
