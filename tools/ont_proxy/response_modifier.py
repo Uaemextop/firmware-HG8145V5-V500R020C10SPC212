@@ -541,15 +541,8 @@ class ONTResponseModifier:
             text = new_text
 
         config_panels = [
-            "ConfigForm", "ConfigPanel", "ListConfigPanel", "TableConfigInfo",
-            "OntReset", "OntRestore", "tableautoupgrade", "localtext",
             "uploadConfig", "downloadConfig", "saveConfig", "SaveCfgInfo",
-            "downloadApConfig", "ApDeviceListInfo", "downloadApConfigTable",
-            "websslpage", "lan_table", "wan_table", "wifi_table", "DivMain",
-            "DivWRR", "DivSP", "DivQueueManagement", "DivAuthentication",
-            "wlaninfo", "itmsinfo", "divdiagnose", "diagnoseresult",
-            "content", "pwdvalue1", "pwdvalue2", "pwdvalue5",
-            "tPwdGponValue", "tHexPwdValue", "checkinfo1", "userpwdsafe",
+            "lan_table",
         ]
         for panel_id in config_panels:
             pattern = re.compile(
@@ -562,24 +555,6 @@ class ONTResponseModifier:
             if new_text != text:
                 mods.append(f"unhide_{panel_id}")
                 text = new_text
-
-        new_text = re.sub(
-            r"setDisplay\s*\(\s*['\"][^'\"]+['\"]\s*,\s*0\s*\)",
-            lambda m: m.group(0).replace(", 0)", ", 1)"),
-            text,
-        )
-        if new_text != text:
-            mods.append("setDisplay_all->1")
-            text = new_text
-
-        new_text = re.sub(
-            r"setDisable\s*\(\s*['\"][^'\"]+['\"]\s*,\s*1\s*\)",
-            lambda m: m.group(0).replace(", 1)", ", 0)"),
-            text,
-        )
-        if new_text != text:
-            mods.append("setDisable_all->0")
-            text = new_text
 
         new_text = re.sub(
             r"TelnetOptionAvaliable\s*\(\s*\)\s*==\s*true",
@@ -627,8 +602,8 @@ class ONTResponseModifier:
             text = new_text
 
         if "</body>" in text.lower():
-            text = text.replace("</body>", self._get_inject_js() + "</body>")
-            text = text.replace("</BODY>", self._get_inject_js() + "</BODY>")
+            inject = self._get_inject_js()
+            text = re.sub(r"</body>", inject + "</body>", text, count=1, flags=re.IGNORECASE)
             mods.append("js_injected")
 
         return text, mods
@@ -636,11 +611,6 @@ class ONTResponseModifier:
     def _get_early_inject_js(self):
         return """<script type="text/javascript">
 (function(){
-var _origDefineProperty=Object.defineProperty;
-Object.defineProperty=function(obj,prop,desc){
-if(prop==='curUserType'&&desc&&desc.value){desc.value='0';}
-return _origDefineProperty.call(this,obj,prop,desc);
-};
 window.__ontProxyAdmin=true;
 })();
 </script>"""
@@ -684,139 +654,6 @@ window.IsE8cFrame=function(){return false;};
 window.gotoGuidePage=function(){};
 window.dbaa1AllowGotoGuidePage=function(){return false;};
 window.hideClaroFastsetting=function(){return false;};
-var _modalBlacklist=['modifyPwdBox','base_mask','pwd_modify','zhezhao',
-'showcmode','showcmode1','DivErrPage','DivErrPage2',
-'DivUpload','DivUploadMsg','DivInstalling','DivRestart',
-'DivFail','DivSuccess','DivCfgUpload','DivCfgProgress'];
-if(typeof window.setDisplay==='function'){
-var _origSD=window.setDisplay;
-window.setDisplay=function(id,sh){
-if(sh===0||sh==='0'){
-for(var i=0;i<_modalBlacklist.length;i++){
-if(id===_modalBlacklist[i]){return _origSD(id,0);}
-}
-return _origSD(id,1);
-}
-return _origSD(id,sh);
-};}
-if(typeof window.setDisable==='function'){
-var _origSDis=window.setDisable;
-window.setDisable=function(id,flag){
-if(flag===1||flag==='1'){return _origSDis(id,0);}
-return _origSDis(id,flag);
-};}
-if(typeof window.setVisible==='function'){
-var _origSV=window.setVisible;
-window.setVisible=function(id,sh){
-if(sh===0||sh==='0'||sh===false){
-for(var i=0;i<_modalBlacklist.length;i++){
-if(id===_modalBlacklist[i]){return _origSV(id,false);}
-}
-return _origSV(id,true);
-}
-return _origSV(id,sh);
-};}
-function unhideAll(){
-var els=document.querySelectorAll('[style]');
-for(var i=0;i<els.length;i++){
-if(els[i].style.display==='none'){
-var dominated=false;
-for(var b=0;b<_modalBlacklist.length;b++){
-if(els[i].id===_modalBlacklist[b]){dominated=true;break;}
-}
-if(!dominated){
-var tag=els[i].tagName.toLowerCase();
-if(tag==='form'||tag==='div'||tag==='tr'||tag==='td'||
-tag==='table'||tag==='li'||tag==='fieldset'||tag==='section'||
-tag==='span'||tag==='p'||tag==='input'||tag==='select'||
-tag==='button'||tag==='textarea'){
-els[i].style.display='';
-}
-}
-}
-if(els[i].style.visibility==='hidden'){
-els[i].style.visibility='visible';
-}
-}
-var disabled=document.querySelectorAll('[disabled]');
-for(var j=0;j<disabled.length;j++){
-var t=disabled[j].tagName.toLowerCase();
-if(t==='input'||t==='select'||t==='button'||t==='textarea'){
-disabled[j].disabled=false;
-disabled[j].removeAttribute('disabled');
-disabled[j].classList.remove('osgidisable');
-disabled[j].classList.remove('Disable');
-disabled[j].style.removeProperty('background-color');
-}
-}
-var readOnly=document.querySelectorAll('[readonly]');
-for(var r=0;r<readOnly.length;r++){
-readOnly[r].removeAttribute('readonly');
-}
-var collapsed=document.querySelectorAll('.Menuhide,.collapsed,.hide');
-for(var c=0;c<collapsed.length;c++){
-collapsed[c].classList.remove('Menuhide');
-collapsed[c].classList.remove('collapsed');
-collapsed[c].classList.remove('hide');
-}
-var menuIframe=document.getElementById('menuIframe');
-if(menuIframe&&(!menuIframe.src||menuIframe.src===''||menuIframe.src==='about:blank')){
-if(typeof window.menuJsonData!=='undefined'&&window.menuJsonData&&window.menuJsonData.length>0){
-var firstUrl='';
-for(var k=0;k<window.menuJsonData.length;k++){
-if(window.menuJsonData[k].submenu){
-for(var l=0;l<window.menuJsonData[k].submenu.length;l++){
-var sm=window.menuJsonData[k].submenu[l];
-if(sm.url&&sm.url!==''){firstUrl=sm.url;break;}
-if(sm.submenu){
-for(var m=0;m<sm.submenu.length;m++){
-if(sm.submenu[m].url){firstUrl=sm.submenu[m].url;break;}
-}
-if(firstUrl)break;
-}
-}
-if(firstUrl)break;
-}
-}
-if(firstUrl){menuIframe.src=firstUrl;}
-else{menuIframe.src='CustomApp/mainpage.asp';}
-}else{menuIframe.src='CustomApp/mainpage.asp';}
-}
-}
-if(document.readyState==='loading'){
-document.addEventListener('DOMContentLoaded',function(){setTimeout(unhideAll,100);});
-}else{
-setTimeout(unhideAll,100);
-}
-setTimeout(unhideAll,500);
-setTimeout(unhideAll,1500);
-setTimeout(unhideAll,3000);
-setTimeout(unhideAll,6000);
-var _observer=new MutationObserver(function(mutations){
-for(var i=0;i<mutations.length;i++){
-var m=mutations[i];
-if(m.type==='attributes'){
-var el=m.target;
-var dominated=false;
-for(var b=0;b<_modalBlacklist.length;b++){
-if(el.id===_modalBlacklist[b]){dominated=true;break;}
-}
-if(!dominated){
-if(m.attributeName==='style'&&el.style.display==='none'){
-el.style.display='';
-}
-if(m.attributeName==='disabled'&&el.disabled){
-el.disabled=false;
-el.removeAttribute('disabled');
-}
-}
-}
-}
-});
-_observer.observe(document.documentElement,{
-attributes:true,attributeFilter:['style','disabled','class'],
-subtree:true
-});
 }catch(e){}
 })();
 </script>"""
